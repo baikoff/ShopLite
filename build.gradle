@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+// Основной стартер для Spring Boot (Web, REST)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Data JPA для работы с PostgreSQL
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Драйвер PostgreSQL
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Spring Security для авторизации
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // GraphQL для Spring
+    implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2' // Проверь актуальную версию
+    implementation 'com.graphql-java:graphql-java-tools:5.2.4'
+
+    // Spring Kafka для интеграции с Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // Lombok для упрощения кода (опционально)
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Тесты (JUnit, Mockito)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
