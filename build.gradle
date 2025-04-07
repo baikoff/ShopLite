@@ -34,7 +34,7 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // Spring Security для авторизации
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // GraphQL для Spring
     implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2' // Проверь актуальную версию
