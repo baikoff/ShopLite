@@ -1,13 +1,20 @@
 package org.shoplite.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@ToString(exclude = {"baskets", "category"})
+@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "products")
+@SuperBuilder(setterPrefix = "with")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
     //TODO Расширить таблицу (возможно)
     @Id

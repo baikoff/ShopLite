@@ -1,11 +1,17 @@
 package org.shoplite.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@ToString(exclude = {"basket"})
+@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "users")
+@SuperBuilder(setterPrefix = "with")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     //TODO Расширить таблицу
     //TODO Создать Файлик для разного и умного
