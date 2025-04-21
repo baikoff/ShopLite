@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-price-to-products
+      author: artem
+      changes:
+        - addColumn:
+            tableName: products
+            columns:
+              - column:
+                  name: price
+                  type: decimal(10,2)
+      rollback:
+        - dropColumn:
+            tableName: products
+            columnName: price

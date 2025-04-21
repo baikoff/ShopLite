@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.liquibase.gradle' version '2.2.1'
 }
 
 group = 'org'
@@ -21,6 +22,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
@@ -32,9 +34,6 @@ dependencies {
 
     // Драйвер PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
-
-    // Spring Security для авторизации
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // GraphQL для Spring
     implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2' // Проверь актуальную версию
@@ -50,6 +49,22 @@ dependencies {
     // Тесты (JUnit, Mockito)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    implementation 'org.liquibase:liquibase-core'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+}
+
+liquibase {
+    activities {
+        main {
+            url 'jdbc:postgresql://localhost:5432/shoplite'
+            username 'postgres'
+            password 'postgres'
+            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+        }
+    }
+    runList = 'main'
 }
 
 tasks.named('test') {
