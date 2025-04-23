@@ -2,6 +2,7 @@ package org.shoplite.service;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
+import org.shoplite.dto.CategoryDTO;
 import org.shoplite.model.Category;
 import org.shoplite.persistence.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,34 @@ public class CategoryServiceTest {
         assertEquals(0, page.getNumber(), "Должна быть страница 0");
         assertEquals(2, page.getSize(), "Размер страницы должен быть 2");
         assertEquals(2, page.getTotalPages(), "Должно быть 2 страницы");
+    }
+
+    @Test
+    void testCreateCategory() {
+        // Очищаем базу
+        categoryRepository.deleteAll();
+
+        // Создаём категорию
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setName("Электроника");
+        Category category = categoryService.createCategory(categoryDTO);
+
+        // Проверяем
+        assertNotNull(category.getId());
+        assertEquals("Электроника", category.getName());
+    }
+
+    @Test
+    void testCreateCategoryWithDuplicateName() {
+        // Создаём первую категорию
+        CategoryDTO categoryDTO1 = new CategoryDTO();
+        categoryDTO1.setName("Электроника");
+        categoryService.createCategory(categoryDTO1);
+
+        // Пытаемся создать вторую с тем же именем
+        CategoryDTO categoryDTO2 = new CategoryDTO();
+        categoryDTO2.setName("Электроника");
+
+        assertThrows(IllegalStateException.class, () -> categoryService.createCategory(categoryDTO2));
     }
 }

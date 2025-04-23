@@ -1,13 +1,14 @@
 package org.shoplite.web;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.shoplite.dto.ProductDTO;
 import org.shoplite.model.Product;
 import org.shoplite.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +22,9 @@ public class ProductController {
         return productService.getProducts(pageable);
     }
 
-//    @PostMapping
-//    public Product addProduct(@RequestBody Product product) {
-//        return productRepository.save(product);
-//    }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product createProduct(@Valid @RequestBody ProductDTO productDTO) {
+        return productService.createProduct(productDTO);
+    }
 }

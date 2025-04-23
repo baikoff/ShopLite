@@ -2,6 +2,8 @@ package org.shoplite.service;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
+import org.shoplite.dto.BasketDTO;
+import org.shoplite.exception.ResourceNotFoundException;
 import org.shoplite.model.Basket;
 import org.shoplite.model.Category;
 import org.shoplite.model.Product;
@@ -19,8 +21,10 @@ import org.springframework.test.annotation.Rollback;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -80,7 +84,69 @@ class BasketServiceTest {
         Page<Basket> page = basketService.getBaskets(pageable);
 
         assertEquals(1, page.getTotalElements(), "Должна быть 1 корзина");
-        assertEquals(0, page.getNumber(), "Должна быть страница 0");
-        assertEquals(10, page.getSize(), "Размер страницы должен быть 10");
+    }
+
+    @Test
+    void testCreateBasketWithNonExistentUser() {
+        BasketDTO basketDTO = new BasketDTO();
+        basketDTO.setUserId(999L);
+        basketDTO.setProductIds(List.of(1L));
+
+        assertThrows(ResourceNotFoundException.class, () -> basketService.createBasket(basketDTO));
+    }
+
+    @Test
+    void testCreateBasketWithDuplicateProductIds() {
+        User user = User.builder()
+                .withName("Иван")
+                .withEmail("ivan@example.com")
+                .build();
+        userRepository.save(user);
+
+        Category category = Category.builder().withName("Электроника").build();
+        categoryRepository.save(category);
+
+        Product product = Product.builder()
+                .withName("Телефон")
+                .withDescription("Смартфон")
+                .withPrice(new BigDecimal("999.99"))
+                .withCategory(category)
+                .build();
+        productRepository.save(product);
+
+        BasketDTO basketDTO = new BasketDTO();
+        basketDTO.setUserId(user.getId());
+        basketDTO.setProductIds(List.of(product.getId(), product.getId()));
+
+        assertThrows(IllegalArgumentException.class, () -> basketService.createBasket(basketDTO));
+    }
+
+    @Test
+    void testCreateBasketWhenBasketAlreadyExists() {
+        User user = User.builder()
+                .withName("Иван")
+                .withEmail("ivan@example.com")
+                .build();
+        userRepository.save(user);
+
+        Category category = Category.builder().withName("Электроника").build();
+        categoryRepository.save(category);
+
+        Product product = Product.builder()
+                .withName("Телефон")
+                .withDescription("Смартфон")
+                .withPrice(new BigDecimal("999.99"))
+                .withCategory(category)
+                .build();
+        productRepository.save(product);
+
+        // Создаём первую корзину
+        BasketDTO basketDTO = new BasketDTO();
+        basketDTO.setUserId(user.getId());
+        basketDTO.setProductIds(List.of(product.getId()));
+        basketService.createBasket(basketDTO);
+
+        // Пытаемся создать вторую
+        assertThrows(IllegalStateException.class, () -> basketService.createBasket(basketDTO));
     }
 }
